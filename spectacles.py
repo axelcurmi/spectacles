@@ -2,13 +2,6 @@ import math
 
 import cv2
 
-# TODO:
-# - [ ] CLI Arguments take image filename
-# - [ ] 'P' Proportion mode
-# - [ ] 'A' Angle mode
-# - [ ] 'R' Reset all lines
-# - [ ] Select License
-
 class Spectacles:
     window_name = "spectacles"
 
