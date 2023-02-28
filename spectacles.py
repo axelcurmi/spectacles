@@ -34,7 +34,7 @@ class Spectacles:
         line_length = self.calculate_line_length(start, end)
         proportion = 1
         
-        if not baseline:
+        if line_length > 0 and not baseline:
             main_line_length = self.calculate_line_length(
                 self.lines[0][0], self.lines[0][1]
             )
@@ -51,8 +51,8 @@ class Spectacles:
 
     def calculate_line_length(self, start, end):
         return round(math.sqrt(
-            pow(start[0] + end[0], 2) +
-            pow(start[1] + end[1], 2)
+            pow(start[0] - end[0], 2) +
+            pow(start[1] - end[1], 2)
         ), 2)
 
     def handle_mouse_events(self, event, x, y, flags, parameters):
