@@ -14,16 +14,22 @@ class Spectacles:
         self.lines = []
         self.mouse_position = None
 
+        self.simple_mode = True
+
         cv2.setMouseCallback(self.window_name,
             self.handle_mouse_events)
 
     def draw_line(self, start, end, baseline = False):
-        color = (12,36,255) if baseline else (36,255,12)
+        color = (12,36,255) if baseline and not self.simple_mode \
+            else (36,255,12)
 
         cv2.line(self.working_image,
             (start[0], start[1]),
             (end[0], end[1]),
             color, 2)
+
+        if self.simple_mode:
+            return
 
         line_length = self.calculate_line_length(start, end)
         proportion = 1
@@ -66,12 +72,40 @@ class Spectacles:
                 baseline=len(self.lines) < 1)
             self.show_image()
 
-    def reset_image(self):
+    def reset(self):
+        self.lines.clear()
         self.working_image = self.original_image.copy()
+
+    def redraw_lines(self):
+        self.working_image = self.original_image.copy()
+        for idx, (start, end) in enumerate(self.lines):
+            self.draw_line(start, end, baseline=idx<1)
+
+    def toggle_simple_mode(self):
+        self.simple_mode = not self.simple_mode
+        self.redraw_lines()
 
     def show_image(self):
         cv2.imshow(self.window_name, self.working_image)
 
-app = Spectacles("test.jpg")
-app.show_image()
-cv2.waitKey()
+if __name__ == "__main__":
+    import argparse
+
+    argument_parser = argparse.ArgumentParser("Spectacles")
+    argument_parser.add_argument("image",
+        help="image to open spectacles with")
+    args = argument_parser.parse_args()
+
+    app = Spectacles(args.image)
+
+    while True:
+        app.show_image()
+        key = cv2.waitKey(1)
+
+        if key == ord('r'):
+            app.reset()
+        if key == ord('s'):
+            app.toggle_simple_mode()
+        elif key == ord('q'):
+            cv2.destroyAllWindows()
+            exit()
